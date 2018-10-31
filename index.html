@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Welcome to markforce</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js" integrity="sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/4.8.25/index.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.css" />
+  <style>
+    .jumbotron {
+      margin-bottom: 0;
+      padding: 32px 16px;
+      background-color: #5c666f;
+    }
+
+    .jumbotron h1 {
+      margin: 5px 0;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #app {
+      display: flex;
+      height: 100%;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: stretch;
+      width: 100%;
+      height: 100%;
+      padding-top: 35px;
+    }
+
+    .content>* {
+      display: block;
+      width: 50%;
+      margin-left: 10px;
+      margin-right: 10px;
+      max-height: 100%;
+    }
+
+    .content textarea {
+      resize: none;
+      font-family: Consolas, "Liberation Mono", Courier, monospace;
+      height: 97%;
+      max-height: 97%;
+      width: 45%;
+      padding: 10px;
+    }
+
+    #preview {
+      height: 97%;
+      max-height: 97%;
+      border: 1px solid #eee;
+      overflow-y: scroll;
+      width: 55%;
+      padding: 10px;
+    }
+
+    button {
+      width: 3.6em;
+      height: 3.6em;
+      box-sizing: border-box;
+      z-index: 99;
+      text-align: center;
+      line-height: 1;
+      background-color: #1c90f3;
+      border: 0.2em solid #5c666f;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    button:focus {
+      outline: none;
+      border-color: #89c9ff;
+    }
+
+    button svg {
+      left: 50%;
+      top: 50%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <section class="jumbotron">
+      <h1>markforce</h1>
+      <p>a markdown to salesforce rich text converter</p>
+      <button v-on:click="copy()">
+        <svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 0h24v24H0z" fill="none" />
+          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+        </svg>
+      </button>
+    </section>
+    <div class="content">
+      <textarea id="editor" v-model="markdown"></textarea>
+      <div id="preview" class="markdown-body" v-html="html"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.js" integrity="sha256-L6nwQfrUv4YrDu/OyAjehTyMjZ7d0n0tjm8aBxHEn18=" crossorigin="anonymous"></script>
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        converter: null,
+        markdown: "",
+      },
+      mounted: function () { this.converter = window.markdownit({ linkify: true, }); },
+      computed: {
+        html: function () {
+          var vm = this;
+
+          if (!vm.converter) {
+            return "";
+          }
+
+          let html = vm.converter.render(vm.markdown);
+
+          html = html.replace(/<\/p>\s*<p>/g, "<br/><br/>");
+          html = html.replace(/<\/p>/g, "<br/>");
+          html = html.replace(/<p>/g, "");
+
+          return html;
+        }
+      },
+      methods: {
+        copy: function () {
+          var vm = this;
+
+          function copyFormatted(html) {
+            // Create an iframe (isolated container) for the HTML
+            var container = document.createElement('div')
+            container.innerHTML = html
+
+            // Hide element
+            container.style.position = 'fixed'
+            container.style.pointerEvents = 'none'
+            container.style.opacity = 0
+
+            // Detect all style sheets of the page
+            var activeSheets = Array.prototype.slice.call(document.styleSheets)
+              .filter(function (sheet) {
+                return !sheet.disabled
+              })
+
+            // Mount the iframe to the DOM to make `contentWindow` available
+            document.body.appendChild(container)
+
+            // Copy to clipboard
+            window.getSelection().removeAllRanges()
+
+            var range = document.createRange()
+            range.selectNode(container)
+            window.getSelection().addRange(range)
+
+            document.execCommand('copy')
+            for (var i = 0; i < activeSheets.length; i++) activeSheets[i].disabled = true
+            document.execCommand('copy')
+            for (var i = 0; i < activeSheets.length; i++) activeSheets[i].disabled = false
+
+            // Remove the iframe
+            document.body.removeChild(container)
+          }
+
+          copyFormatted(vm.html);
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
