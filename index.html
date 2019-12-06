@@ -3,7 +3,8 @@
 
 <head>
   <title>Welcome to markforce</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js" integrity="sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"
+    integrity="sha256-FtWfRI+thWlNz2sB3SJbwKx5PgMyKIVgwHCTwa3biXc=" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.auth0.com/styleguide/4.8.25/index.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.10.0/github-markdown.css" />
   <style>
@@ -93,6 +94,19 @@
       left: 50%;
       top: 50%;
     }
+
+    .copy-container {
+      font-family: "SalesForce Sans",Arial,sans-serif;
+      font-size: 13px;
+    }
+
+    .copy-container blockquote {
+      font-size: 13px;
+    }
+
+    .copy-container pre {
+      padding: 13px;
+    }
   </style>
 </head>
 
@@ -104,7 +118,8 @@
       <button v-on:click="copy()">
         <svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 0h24v24H0z" fill="none" />
-          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+          <path
+            d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
         </svg>
       </button>
     </section>
@@ -114,7 +129,8 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.js" integrity="sha256-L6nwQfrUv4YrDu/OyAjehTyMjZ7d0n0tjm8aBxHEn18=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/8.4.2/markdown-it.js"
+    integrity="sha256-L6nwQfrUv4YrDu/OyAjehTyMjZ7d0n0tjm8aBxHEn18=" crossorigin="anonymous"></script>
   <script>
     var app = new Vue({
       el: "#app",
@@ -147,18 +163,13 @@
           function copyFormatted(html) {
             // Create an iframe (isolated container) for the HTML
             var container = document.createElement('div')
-            container.innerHTML = html
+            container.className = "copy-container";
+            container.innerHTML = `${html}`
 
             // Hide element
             container.style.position = 'fixed'
             container.style.pointerEvents = 'none'
             container.style.opacity = 0
-
-            // Detect all style sheets of the page
-            var activeSheets = Array.prototype.slice.call(document.styleSheets)
-              .filter(function (sheet) {
-                return !sheet.disabled
-              })
 
             // Mount the iframe to the DOM to make `contentWindow` available
             document.body.appendChild(container)
@@ -171,9 +182,6 @@
             window.getSelection().addRange(range)
 
             document.execCommand('copy')
-            for (var i = 0; i < activeSheets.length; i++) activeSheets[i].disabled = true
-            document.execCommand('copy')
-            for (var i = 0; i < activeSheets.length; i++) activeSheets[i].disabled = false
 
             // Remove the iframe
             document.body.removeChild(container)
